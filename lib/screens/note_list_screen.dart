@@ -54,41 +54,53 @@ class NoteList extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 80),
               children: snapshot.data!.map((document) {
                 return Card(
-                  child: Column(
-                    children: [
-                      document.imageUrl != null && Uri.parse(document.imageUrl!).isAbsolute? ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Image.network(
-                          document.imageUrl!,
-                          fit: BoxFit.cover,
-                          alignment: Alignment.center,
-                          width: double.infinity,
-                          height: 150,
-                        ),  
-                      )
-                      : Container(),
-                      ListTile(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return NoteDialog(note: document);
-                            },
-                          );
-                        },
-                        title: Text(document.title),
-                        subtitle: Text(document.description),
-                        trailing: InkWell(
-                          onTap: () {
-                            NoteService.deleteNote(document);
+                  child: InkWell(
+                    onTap: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return NoteDialog(note: document);
                           },
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10),
-                            child: Icon(Icons.delete),
+                        );
+                    },
+                    child: Column(
+                      children: [
+                        document.imageUrl != null &&
+                                Uri.parse(document.imageUrl!).isAbsolute
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.network(
+                                  document.imageUrl!,
+                                  fit: BoxFit.cover,
+                                  alignment: Alignment.center,
+                                  width: double.infinity,
+                                  height: 150,
+                                ),
+                              )
+                            : Container(),
+                        ListTile(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return NoteDialog(note: document);
+                              },
+                            );
+                          },
+                          title: Text(document.title),
+                          subtitle: Text(document.description),
+                          trailing: InkWell(
+                            onTap: () {
+                              NoteService.deleteNote(document);
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Icon(Icons.delete),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               }).toList(),

@@ -99,6 +99,7 @@ class _NoteDialogState extends State<NoteDialog> {
               NoteService.addNote(Note(
                 title: _titleController.text,
                 description: _descriptionController.text, 
+                
               )).whenComplete(() {
                 Navigator.of(context).pop();
               });
