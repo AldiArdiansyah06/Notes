@@ -1,9 +1,8 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:notes/models/note.dart';
-import 'package:path/path.dart' as p ;
+import 'package:path/path.dart' as path;
 
 class NoteService {
   static final FirebaseFirestore _database = FirebaseFirestore.instance;
@@ -13,8 +12,8 @@ class NoteService {
 
   static Future<String?> uploadImage(File imageFile) async {
     try {
-      String fileName = p.basename(imageFile.path);
-      Reference ref = _storage.ref().child('image/$fileName');
+      String fileName = path.basename(imageFile.path);
+      Reference ref = _storage.ref().child('images/$fileName');
       UploadTask uploadTask = ref.putFile(imageFile);
       TaskSnapshot taskSnapshot = await uploadTask;
       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
@@ -28,6 +27,7 @@ class NoteService {
     Map<String, dynamic> newNote = {
       'title': note.title,
       'description': note.description,
+      'image_url': note.imageUrl,
       'created_at': FieldValue.serverTimestamp(),
       'updated_at': FieldValue.serverTimestamp(),
     };
@@ -38,6 +38,7 @@ class NoteService {
     Map<String, dynamic> updatedNote = {
       'title': note.title,
       'description': note.description,
+      'image_url': note.imageUrl,
       'created_at': note.createdAt,
       'updated_at': FieldValue.serverTimestamp(),
     };
@@ -61,6 +62,7 @@ class NoteService {
           id: doc.id,
           title: data['title'],
           description: data['description'],
+          imageUrl: data['image_url'],
           createdAt: data['created_at'] != null
               ? data['created_at'] as Timestamp
               : null,

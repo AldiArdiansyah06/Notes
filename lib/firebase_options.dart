@@ -27,10 +27,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -75,11 +72,23 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDGsUn_ozIztY2HtbbdVhDg5dVF3WY4Zeg',
-    appId: '1:654121681836:ios:3f98fe4887cb22c73d3009',
+    appId: '1:654121681836:ios:178d5af72f871f203d3009',
     messagingSenderId: '654121681836',
     projectId: 'notes-1b67e',
     databaseURL: 'https://notes-1b67e-default-rtdb.firebaseio.com',
     storageBucket: 'notes-1b67e.appspot.com',
-    iosBundleId: 'com.example.notes.RunnerTests',
+    iosBundleId: 'com.example.notes',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyAgtseowrDeQkivsYcKaV0IpESvE5Z23To',
+    appId: '1:654121681836:web:c41237b5e28637313d3009',
+    messagingSenderId: '654121681836',
+    projectId: 'notes-1b67e',
+    authDomain: 'notes-1b67e.firebaseapp.com',
+    databaseURL: 'https://notes-1b67e-default-rtdb.firebaseio.com',
+    storageBucket: 'notes-1b67e.appspot.com',
+    measurementId: 'G-T15EF3D48J',
+  );
+
 }

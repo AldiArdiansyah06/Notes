@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:notes/models/note.dart';
@@ -63,24 +62,19 @@ class _NoteDialogState extends State<NoteDialog> {
           ),
           const Padding(
             padding: EdgeInsets.only(top: 20),
-            child: Text(
-              'Image: ',
-            ),
+            child: Text('Image: '),
           ),
           Expanded(
               child: _imageFile != null
-                  ? Image.file(
-                      _imageFile!,
-                      fit: BoxFit.cover,
-                    )
+                  ? Image.file(_imageFile!, fit: BoxFit.cover)
                   : (widget.note?.imageUrl != null &&
-                          Uri.parse(widget.note!.imageUrl!).isAbsolute)
-                      ? Image.network(
-                          widget.note!.imageUrl!,
-                          fit: BoxFit.cover,
-                        )
-                      : Container()),
-          TextButton(onPressed: _pickImage, child: const Text('Pick Image')),
+                          Uri.parse(widget.note!.imageUrl!).isAbsolute
+                      ? Image.network(widget.note!.imageUrl!, fit: BoxFit.cover)
+                      : Container())),
+          TextButton(
+            onPressed: _pickImage,
+            child: const Text('Pick Image'),
+          ),
         ],
       ),
       actions: [
@@ -94,23 +88,27 @@ class _NoteDialogState extends State<NoteDialog> {
           ),
         ),
         ElevatedButton(
-          onPressed: () {
-            if (widget.note == null) {
-              NoteService.addNote(Note(
-                title: _titleController.text,
-                description: _descriptionController.text, 
-                
-              )).whenComplete(() {
-                Navigator.of(context).pop();
-              });
+          onPressed: () async {
+            String? imageUrl;
+            if (_imageFile != null) {
+              imageUrl = await NoteService.uploadImage(_imageFile!);
             } else {
-              NoteService.updateNote(Note(
-                id: widget.note!.id,
-                title: _titleController.text,
-                description: _descriptionController.text,
-                imageUrl: ,
-                createdAt: widget.note!.createdAt,
-              )).whenComplete(() => Navigator.of(context).pop());
+              imageUrl = widget.note?.imageUrl;
+            }
+            Note note = Note(
+              id: widget.note?.id,
+              title: _titleController.text,
+              description: _descriptionController.text,
+              imageUrl: imageUrl,
+              createdAt: widget.note?.createdAt,
+            );
+
+            if (widget.note == null) {
+              NoteService.addNote(note)
+                  .whenComplete(() => Navigator.of(context).pop());
+            } else {
+              NoteService.updateNote(note)
+                  .whenComplete(() => Navigator.of(context).pop());
             }
           },
           child: Text(widget.note == null ? 'Add' : 'Update'),

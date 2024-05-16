@@ -57,18 +57,21 @@ class NoteList extends StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       showDialog(
-                          context: context,
-                          builder: (context) {
-                            return NoteDialog(note: document);
-                          },
-                        );
+                        context: context,
+                        builder: (context) {
+                          return NoteDialog(note: document);
+                        },
+                      );
                     },
                     child: Column(
                       children: [
                         document.imageUrl != null &&
                                 Uri.parse(document.imageUrl!).isAbsolute
                             ? ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(16),
+                                  topRight: Radius.circular(16),
+                                ),
                                 child: Image.network(
                                   document.imageUrl!,
                                   fit: BoxFit.cover,
@@ -79,19 +82,36 @@ class NoteList extends StatelessWidget {
                               )
                             : Container(),
                         ListTile(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return NoteDialog(note: document);
-                              },
-                            );
-                          },
                           title: Text(document.title),
                           subtitle: Text(document.description),
                           trailing: InkWell(
                             onTap: () {
-                              NoteService.deleteNote(document);
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Konfirmasi Hapus'),
+                                    content: Text(
+                                        'Yakin ingin menghapus data \'${document.title}\' ?'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: const Text('Cancel'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: const Text('Hapus'),
+                                        onPressed: () {
+                                          NoteService.deleteNote(document)
+                                              .whenComplete(() =>
+                                                  Navigator.of(context).pop());
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
                             child: const Padding(
                               padding: EdgeInsets.symmetric(vertical: 10),
