@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:notes/models/note.dart';
+import 'package:notes/service/location_services.dart';
 import 'package:notes/service/note_service.dart';
 
 class NoteDialog extends StatefulWidget {
@@ -17,6 +19,7 @@ class _NoteDialogState extends State<NoteDialog> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   File? _imageFile;
+  Position? _currentPosition;
 
   @override
   void initState() {
@@ -35,6 +38,14 @@ class _NoteDialogState extends State<NoteDialog> {
         _imageFile = File(pickedFile.path);
       });
     }
+  }
+
+  Future<void> _pickLocatiton() async {
+    final currentPosition = await LocationService.getCurrentPosition();
+
+    setState(() {
+      _currentPosition = currentPosition;
+    });
   }
 
   @override
@@ -75,6 +86,12 @@ class _NoteDialogState extends State<NoteDialog> {
             onPressed: _pickImage,
             child: const Text('Pick Image'),
           ),
+          TextButton(
+            onPressed: _pickLocatiton, 
+            child: const Text('Get Current Location')
+            ),
+            Text('LAT: ${_currentPosition?.latitude ?? ""}'),
+            Text('LNG: ${_currentPosition?.longitude ?? ""}'),
         ],
       ),
       actions: [
@@ -100,6 +117,8 @@ class _NoteDialogState extends State<NoteDialog> {
               title: _titleController.text,
               description: _descriptionController.text,
               imageUrl: imageUrl,
+              latitude: _currentPosition?.latitude,
+              longitude: _currentPosition?.longitude,
               createdAt: widget.note?.createdAt,
             );
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notes/service/note_service.dart';
 import 'package:notes/widgets/note_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NoteListScreen extends StatefulWidget {
   const NoteListScreen({super.key});
@@ -35,6 +36,16 @@ class _NoteListScreenState extends State<NoteListScreen> {
 
 class NoteList extends StatelessWidget {
   const NoteList({super.key});
+
+  Future<void> _launchMaps(double latitude, double longitude) async {
+    Uri googleUrl = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
+    try {
+      await launchUrl(googleUrl);
+    } catch (e) {
+      print('Could not open the map: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,39 +95,55 @@ class NoteList extends StatelessWidget {
                         ListTile(
                           title: Text(document.title),
                           subtitle: Text(document.description),
-                          trailing: InkWell(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: const Text('Konfirmasi Hapus'),
-                                    content: Text(
-                                        'Yakin ingin menghapus data \'${document.title}\' ?'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: const Text('Cancel'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      TextButton(
-                                        child: const Text('Hapus'),
-                                        onPressed: () {
-                                          NoteService.deleteNote(document)
-                                              .whenComplete(() =>
-                                                  Navigator.of(context).pop());
-                                        },
-                                      ),
-                                    ],
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.map),
+                                onPressed: document.latitude != null &&
+                                        document.longitude != null
+                                    ? () {
+                                        _launchMaps(document.latitude!,
+                                            document.longitude!);
+                                      }
+                                    : null,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Konfirmasi Hapus'),
+                                        content: Text(
+                                            'Yakin ingin menghapus data \'${document.title}\' ?'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: const Text('Cancel'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: const Text('Hapus'),
+                                            onPressed: () {
+                                              NoteService.deleteNote(document)
+                                                  .whenComplete(() =>
+                                                      Navigator.of(context)
+                                                          .pop());
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 10),
-                              child: Icon(Icons.delete),
-                            ),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10),
+                                  child: Icon(Icons.delete),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
